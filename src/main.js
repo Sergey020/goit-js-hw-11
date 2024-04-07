@@ -20,7 +20,16 @@ function hendleSubmit(event) {
   console.log(inputEl);
 
 if(inputEl === "") {
-  alert("Field must be filled !")
+  iziToast.show({
+    message: " Field must be filled! ",
+    position: 'topRight',
+    backgroundColor: 'red',
+    messageColor: '#FFFFFF',
+    transitionIn: 'fadeln',
+    timeout: 4000,
+  });
+  return;
+
 }
 
   const params = new URLSearchParams({
@@ -42,7 +51,8 @@ if(inputEl === "") {
       console.log(data.hits);
       ulEl.insertAdjacentHTML('beforeend', createMarkup(data.hits));
     })
-    .catch(error => console.log('catch', error));
+    .catch(error => console.log('catch', error))
+    .finally(()=>form.reset());
 
   function createMarkup(arrImg) {
     return arrImg
