@@ -1,6 +1,6 @@
 // https://pixabay.com/api/?key=43264129-0a20e73c7f6f9c0a58d1fd1ca&q=dog&image_type=photo&orientation=horizontal&safesearch=true
 const BASE_URL = 'https://pixabay.com/api/';
-const API_KEY = '43261093-4c9b6888dd775193ca00ecdb2';
+const API_KEY = '43264129-0a20e73c7f6f9c0a58d1fd1ca';
 
 const searchEl = document.querySelector('form');
 const ulEl = document.querySelector('.gallery');
@@ -34,11 +34,11 @@ function hendleSubmit(event) {
     })
     .then(data => {
       console.log(data.hits);
-      ulEl.innerHTML = createMarckup(data.hits)
+      ulEl.insertAdjacentHTML("beforeend", createMarkup(data.hits))
     })
     .catch(error => console.log('catch', error));
 
-  function createMarckup(arrImg) {
+  function createMarkup(arrImg) {
     return arrImg
       .map(
         ({
@@ -79,37 +79,4 @@ function hendleSubmit(event) {
       )
       .join('');
   }
-  // function createMarckup(arrImg) {
-  //   return arrImg
-  //     .map(
-  //       ({
-  //         webformatURL,
-  //         largeImageURL,
-  //         tags,
-  //         likes,
-  //         views,
-  //         comments,
-  //         downloads,
-  //       }) => `<li class="gallery-item">
-  //       <a class="gallery-link" href=${largeImageURL}>
-  //           <img
-  //               class="gallery-image"
-  //               src=${webformatURL}
-  //               alt=${tags}
-  //           />
-  //           <div class="box-card">
-  //               <h2 class="box-title">Likes</h2>
-  //               <p class="box-text">${likes}</p>
-  //               <h2 class="box-title">Views</h2>
-  //               <p class="box-text">${views}</p>
-  //               <h2 class="box-title">Comments</h2>
-  //               <p class="box-text">${comments}</p>
-  //               <h2 class="box-title">Downloads</h2>
-  //               <p class="box-text">${downloads}</p>
-  //           </div>
-  //       </a>
-  //     </li>`
-  //     )
-  //     .join('');
-  // }
 }
