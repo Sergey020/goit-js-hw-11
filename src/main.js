@@ -1,5 +1,7 @@
 import iziToast from  "izitoast" ;
 import  "izitoast/dist/css/iziToast.min.css" ;
+import SimpleLightbox from  "simplelightbox" ;
+import  "simplelightbox/dist/simple-lightbox.min.css" ;
 
 
 
@@ -49,7 +51,11 @@ if(inputEl === "") {
     })
     .then(data => {
       console.log(data.hits);
-      ulEl.insertAdjacentHTML('beforeend', createMarkup(data.hits));
+      ulEl.innerHTML = createMarkup(data.hits);
+      const lightbox = new SimpleLightbox('.gallery a', {
+                captionsData: 'alt',
+                captionDelay: 250,
+              });
     })
     .catch(error => console.log('catch', error))
     .finally(()=>form.reset());
