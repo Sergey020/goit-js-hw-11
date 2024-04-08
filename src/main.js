@@ -1,18 +1,14 @@
-import iziToast from  "izitoast" ;
-import  "izitoast/dist/css/iziToast.min.css" ;
-import SimpleLightbox from  "simplelightbox" ;
-import  "simplelightbox/dist/simple-lightbox.min.css" ;
-
-
-
-
-// https://pixabay.com/api/?key=43264129-0a20e73c7f6f9c0a58d1fd1ca&q=dog&image_type=photo&orientation=horizontal&safesearch=true
-const BASE_URL = 'https://pixabay.com/api/';
-const API_KEY = '43264129-0a20e73c7f6f9c0a58d1fd1ca';
+import iziToast from 'izitoast';
+import 'izitoast/dist/css/iziToast.min.css';
+import SimpleLightbox from 'simplelightbox';
+import 'simplelightbox/dist/simple-lightbox.min.css';
+import { createMarkup } from './js/render-functions';
+import { makeRequest } from './js/pixabay-api';
 
 const searchEl = document.querySelector('form');
 const ulEl = document.querySelector('.gallery');
-
+const loaderEl = document.querySelector('.loader');
+loaderEl.style.display = 'none';
 searchEl.addEventListener('submit', hendleSubmit);
 
 function hendleSubmit(event) {
@@ -20,84 +16,43 @@ function hendleSubmit(event) {
   const form = event.target;
   const inputEl = form.elements.imgName.value;
   console.log(inputEl);
+  if (inputEl === '') {
+    iziToast.show({
+      message: ' Field must be filled! ',
+      position: 'topRight',
+      backgroundColor: 'red',
+      messageColor: '#FFFFFF',
+      transitionIn: 'fadeln',
+      timeout: 4000,
+    });
+    return;
+  }
 
-if(inputEl === "") {
-  iziToast.show({
-    message: " Field must be filled! ",
-    position: 'topRight',
-    backgroundColor: 'red',
-    messageColor: '#FFFFFF',
-    transitionIn: 'fadeln',
-    timeout: 4000,
-  });
-  return;
+  loaderEl.style.display = 'block';
 
-}
-
-  const params = new URLSearchParams({
-    key: API_KEY,
-    q: `${inputEl}`,
-    imege_type: 'photo',
-    orientation: 'horizontal',
-    safesearch: true,
-  });
-
-  return fetch(`${BASE_URL}?${params}`)
-    .then(response => {
-      if (!response.ok) {
-        throw new Error(response.status);
-      }
-      return response.json();
-    })
+  makeRequest(inputEl)
     .then(data => {
       console.log(data.hits);
+
+      loaderEl.style.display = 'None';
+      if (data.hits.length === 0) {
+        iziToast.show({
+          message:
+            ' Sorry, there are no images matching your search query. Please try again! ',
+          position: 'topRight',
+          backgroundColor: 'red',
+          messageColor: '#FFFFFF',
+          transitionIn: 'fadeln',
+          timeout: 4000,
+        });
+        return;
+      }
       ulEl.innerHTML = createMarkup(data.hits);
       const lightbox = new SimpleLightbox('.gallery a', {
-                captionsData: 'alt',
-                captionDelay: 250,
-              });
+        captionsData: 'alt',
+        captionDelay: 250,
+      });
     })
     .catch(error => console.log('catch', error))
-    .finally(()=>form.reset());
-
-  function createMarkup(arrImg) {
-    return arrImg
-      .map(
-        ({
-          webformatURL,
-          largeImageURL,
-          tags,
-          likes,
-          views,
-          comments,
-          downloads,
-        }) => `<li class="gallery-item">
-<a class="gallery-link" href=${largeImageURL}>
-   <img 
-   class="gallery-image" 
-  src="${webformatURL}" 
-  alt="${tags}"/>
- <ul class="box-list">
-   <li>
-    <h2 class="box-title">Likes</h2>
-     <p class="box-text">${likes}</p>
-     </li>
-    <li>
-    <h2 class="box-title">Views</h2>
-    <p class="box-text">${views}</p>
-    </li>
-    <li class="box-item">
-    <h2 class="box-title">Comments</h2>
-    <p class="box-text">${comments}</p>
-    </li>
-    <li class="box-item">
-    <h2 class="box-title">Downloads</h2>
-    <p class="box-text">${downloads}</p>
-    </li>
-    </ul>
-    </a>
-    </li>`
-      )
-      .join('');
-  }
+    .finally(() => form.reset());
 }
