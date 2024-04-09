@@ -9,9 +9,9 @@ const searchEl = document.querySelector('form');
 const ulEl = document.querySelector('.gallery');
 const loaderEl = document.querySelector('.loader');
 loaderEl.style.display = 'none';
-searchEl.addEventListener('submit', hendleSubmit);
+searchEl.addEventListener('submit', handleSubmit);
 
-function hendleSubmit(event) {
+function handleSubmit(event) {
   event.preventDefault();
   const form = event.target;
   const inputEl = form.elements.imgName.value;
@@ -34,8 +34,9 @@ function hendleSubmit(event) {
     .then(data => {
       console.log(data.hits);
 
-      loaderEl.style.display = 'None';
+      loaderEl.style.display = 'none';
       if (data.hits.length === 0) {
+        ulEl.innerHTML = '';
         iziToast.show({
           message:
             ' Sorry, there are no images matching your search query. Please try again! ',
